@@ -1,0 +1,12 @@
+#!/bin/sh
+# Ledgerbook AppImage entry point. Runs the bundled Python in isolated mode so the
+# host's Python, PYTHONPATH and user site-packages can never interfere.
+set -e
+HERE=$(dirname "$(readlink -f "$0")")
+
+# Bundled xcb helper libraries (libxcb-cursor0 & friends) that Qt 6 needs but many
+# distributions don't install by default. Host libraries are still used for everything else.
+export LD_LIBRARY_PATH="$HERE/usr/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export PYTHONDONTWRITEBYTECODE=1
+
+exec "$HERE/usr/python/bin/python3" -I -m ledgerbook "$@"
