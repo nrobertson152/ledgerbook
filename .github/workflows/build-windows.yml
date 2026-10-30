@@ -2,12 +2,11 @@ name: Build Windows executable
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - 'v*'
+  release:
+    types: [published]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   windows:
@@ -45,3 +44,11 @@ jobs:
           path: dist/Ledgerbook.exe
           if-no-files-found: error
           retention-days: 30
+
+      - name: Attach executable to GitHub Release
+        if: github.event_name == 'release'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "${{ github.event.release.tag_name }}" "dist/Ledgerbook.exe" --clobber
