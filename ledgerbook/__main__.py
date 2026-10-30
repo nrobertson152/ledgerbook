@@ -1,3 +1,3 @@
-from .app import main
+from ledgerbook.app import main
 
 main()
