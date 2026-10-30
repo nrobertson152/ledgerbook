@@ -1,0 +1,47 @@
+name: Build Windows executable
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          architecture: x64
+
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "PySide6-Essentials>=6.7,<7" pyinstaller
+
+      - name: Build Ledgerbook.exe
+        shell: pwsh
+        run: |
+          python -m PyInstaller --noconfirm --clean --onefile --windowed --name Ledgerbook --collect-all PySide6 --collect-data ledgerbook --paths . ledgerbook/__main__.py
+
+      - name: Verify executable exists
+        shell: pwsh
+        run: |
+          if (!(Test-Path "dist/Ledgerbook.exe")) { throw "Windows build did not produce Ledgerbook.exe" }
+
+      - name: Upload Windows executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ledgerbook-Windows-x64
+          path: dist/Ledgerbook.exe
+          if-no-files-found: error
+          retention-days: 30
