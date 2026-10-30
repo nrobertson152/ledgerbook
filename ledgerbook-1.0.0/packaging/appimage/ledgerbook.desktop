@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Ledgerbook
-Comment=Offline logbook manager
-Exec=ledgerbook
-Icon=ledgerbook
-Terminal=false
-Categories=Office;Utility;
-X-AppImage-Version=1.0.0
